@@ -1,0 +1,76 @@
+### Test Authentication Endpoints
+### Make sure the server is running: npm run start:dev
+
+### 1. Signup - Create a new user
+POST http://localhost:3000/auth/signup
+Content-Type: application/json
+
+{
+  "full_name": "Test User",
+  "email": "test@example.com",
+  "password": "password123"
+}
+
+###
+
+### 2. Signup - Create admin user
+POST http://localhost:3000/auth/signup
+Content-Type: application/json
+
+{
+  "full_name": "Admin User",
+  "email": "admin@example.com",
+  "password": "admin123",
+  "role": "ADMIN"
+}
+
+###
+
+### 3. Login - Get access token
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "password123"
+}
+
+###
+
+### 4. Login - Admin
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "admin123"
+}
+
+###
+
+### 5. Forgot Password
+POST http://localhost:3000/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "test@example.com"
+}
+
+###
+
+### 6. Reset Password
+POST http://localhost:3000/auth/reset-password
+Content-Type: application/json
+
+{
+  "token": "YOUR_RESET_TOKEN_HERE",
+  "newPassword": "newpassword123"
+}
+
+###
+
+### 7. Test Protected Route (requires JWT token)
+GET http://localhost:3000/
+Authorization: Bearer YOUR_ACCESS_TOKEN_HERE
+
+###
