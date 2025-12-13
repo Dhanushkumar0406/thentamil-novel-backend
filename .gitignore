@@ -9,8 +9,9 @@ node_modules/
 .env.production.local
 
 # Compiled output
-/dist
-/build
+dist/
+build/
+.nest/
 
 # Logs
 logs
@@ -26,27 +27,20 @@ lerna-debug.log*
 Thumbs.db
 
 # Tests
-/coverage
-/.nyc_output
+coverage/
+.nyc_output/
 
 # IDEs and editors
-/.idea
+.vscode/
+.idea
 .project
 .classpath
-.c9/
-*.launch
 .settings/
-*.sublime-workspace
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
 
 # Prisma
-/generated/prisma
-prisma/migrations/*_migration.sql
 node_modules/.prisma
+prisma/dev.db
+prisma/dev.db-journal
 
 # Temp files
 *.tmp
