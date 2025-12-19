@@ -78,6 +78,12 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    // Update last login timestamp
+    await this.prisma.users.update({
+      where: { id: user.id },
+      data: { last_login: new Date() },
+    });
+
     // Generate JWT token with payload including role
     const payload = { id: user.id, email: user.email, role: user.role };
     const access_token = this.jwtService.sign(payload);

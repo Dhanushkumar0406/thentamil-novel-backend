@@ -6,73 +6,191 @@ datasource db {
   provider = "postgresql"
 }
 
-model chapters {
-  id                               Int      @id @default(autoincrement())
-  name                             String   @db.VarChar(255)
-  chapter_type                     String   @db.VarChar(100)
-  thumbnail                        String   @db.VarChar(500)
-  title                            String   @db.VarChar(500)
-  novel_id                         String   @db.Uuid
-  content                          String
-  created_at                       DateTime @default(now()) @db.Timestamp(6)
-  updated_at                       DateTime @updatedAt @db.Timestamp(6)
-  created_by                       Int
-  updated_by                       Int?
-  novels                           novels   @relation(fields: [novel_id], references: [public_id], onDelete: Cascade)
-  users_chapters_created_byTousers users    @relation("chapters_created_byTousers", fields: [created_by], references: [id])
-  users_chapters_updated_byTousers users?   @relation("chapters_updated_byTousers", fields: [updated_by], references: [id], onDelete: Restrict)
-
-  @@index([novel_id], map: "idx_chapters_novel_id")
-  @@index([title], map: "idx_chapters_title")
-  @@index([created_by], map: "idx_chapters_created_by")
-}
-
-model novels {
-  public_id                      String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  chapters                       Int        @default(0)
-  views                          Int        @default(0)
-  author_name                    String     @db.VarChar(255)
-  title                          String     @db.VarChar(500)
-  categories                     Json
-  novel_summary                  String
-  created_at                     DateTime   @default(now()) @db.Timestamp(6)
-  updated_at                     DateTime   @updatedAt @db.Timestamp(6)
-  created_by                     Int
-  updated_by                     Int?
-  chapter_list                   chapters[]
-  users_novels_created_byTousers users      @relation("novels_created_byTousers", fields: [created_by], references: [id])
-  users_novels_updated_byTousers users?     @relation("novels_updated_byTousers", fields: [updated_by], references: [id], onDelete: Restrict)
-
-  @@index([author_name], map: "idx_novels_author_name")
-  @@index([created_at], map: "idx_novels_created_at")
-  @@index([created_by], map: "idx_novels_created_by")
-  @@index([title], map: "idx_novels_title")
-  @@index([views], map: "idx_novels_views")
-}
-
-<<<<<<< HEAD
 enum Role {
   ADMIN
   EDITOR
   USER
 }
 
-=======
->>>>>>> 5f6bf200c90b6134e6c2f9afdc31c76e5f867b04
+enum NovelStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum ChapterStatus {
+  DRAFT
+  PUBLISHED
+  SCHEDULED
+}
+
 model users {
-  id                                Int        @id @default(autoincrement())
-  full_name                         String     @db.VarChar(100)
-  email                             String     @unique @db.VarChar(100)
-  password                          String     @db.VarChar(255)
-<<<<<<< HEAD
-  role                              Role       @default(USER)
-  reset_token                       String?    @db.VarChar(255)
-  reset_token_expiry                DateTime?  @db.Timestamp(6)
-=======
->>>>>>> 5f6bf200c90b6134e6c2f9afdc31c76e5f867b04
-  created_at                        DateTime   @default(now()) @db.Timestamp(6)
-  novels_novels_created_byTousers   novels[]   @relation("novels_created_byTousers")
-  novels_novels_updated_byTousers   novels[]   @relation("novels_updated_byTousers")
-  chapters_chapters_created_byTousers chapters[] @relation("chapters_created_byTousers")
-  chapters_chapters_updated_byTousers chapters[] @relation("chapters_updated_byTousers")
+  id                                  Int                    @id @default(autoincrement())
+  full_name                           String                 @db.VarChar(100)
+  email                               String                 @unique @db.VarChar(100)
+  password                            String                 @db.VarChar(255)
+  role                                Role                   @default(USER)
+  reset_token                         String?                @db.VarChar(255)
+  reset_token_expiry                  DateTime?              @db.Timestamp(6)
+  last_login                          DateTime?              @db.Timestamp(6)
+  refresh_token                       String?                @db.Text
+  created_at                          DateTime               @default(now()) @db.Timestamp(6)
+
+  // Relations
+  novels_created                      novels[]               @relation("novels_created_byTousers")
+  novels_updated                      novels[]               @relation("novels_updated_byTousers")
+  chapters_created                    chapters[]             @relation("chapters_created_byTousers")
+  chapters_updated                    chapters[]             @relation("chapters_updated_byTousers")
+  subscriptions                       novel_subscriptions[]
+  notifications                       notifications[]
+  reading_progress                    reading_progress[]
+  novel_likes                         novel_likes[]
+  novel_bookmarks                     novel_bookmarks[]
+
+  @@index([email])
+}
+
+model novels {
+  public_id         String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title             String                 @db.VarChar(500)
+  author_name       String                 @db.VarChar(255)
+  novel_summary     String                 @db.Text
+  categories        Json                   @db.JsonB
+  cover_image       String?                @db.VarChar(500)
+  status            NovelStatus            @default(DRAFT)
+  chapters_count    Int                    @default(0)
+  views             Int                    @default(0)
+  likes             Int                    @default(0)
+  bookmarks         Int                    @default(0)
+  created_at        DateTime               @default(now()) @db.Timestamp(6)
+  updated_at        DateTime               @updatedAt @db.Timestamp(6)
+  created_by        Int
+  updated_by        Int?
+
+  // Relations
+  creator           users                  @relation("novels_created_byTousers", fields: [created_by], references: [id])
+  updater           users?                 @relation("novels_updated_byTousers", fields: [updated_by], references: [id], onDelete: Restrict)
+  chapters          chapters[]
+  subscriptions     novel_subscriptions[]
+  reading_progress  reading_progress[]
+  novel_likes       novel_likes[]
+  novel_bookmarks   novel_bookmarks[]
+
+  @@index([author_name], map: "idx_novels_author_name")
+  @@index([created_at], map: "idx_novels_created_at")
+  @@index([created_by], map: "idx_novels_created_by")
+  @@index([title], map: "idx_novels_title")
+  @@index([views], map: "idx_novels_views")
+  @@index([status], map: "idx_novels_status")
+}
+
+model chapters {
+  id              Int            @id @default(autoincrement())
+  chapter_number  Int
+  name            String         @db.VarChar(255)
+  title           String         @db.VarChar(500)
+  chapter_type    String         @db.VarChar(100)
+  thumbnail       String?        @db.VarChar(500)
+  content         String         @db.Text
+  status          ChapterStatus  @default(DRAFT)
+  views           Int            @default(0)
+  novel_id        String         @db.Uuid
+  created_at      DateTime       @default(now()) @db.Timestamp(6)
+  updated_at      DateTime       @updatedAt @db.Timestamp(6)
+  created_by      Int
+  updated_by      Int?
+
+  // Relations
+  novel           novels         @relation(fields: [novel_id], references: [public_id], onDelete: Cascade)
+  creator         users          @relation("chapters_created_byTousers", fields: [created_by], references: [id])
+  updater         users?         @relation("chapters_updated_byTousers", fields: [updated_by], references: [id], onDelete: Restrict)
+
+  @@unique([novel_id, chapter_number], name: "unique_chapter_number_per_novel")
+  @@index([novel_id], map: "idx_chapters_novel_id")
+  @@index([title], map: "idx_chapters_title")
+  @@index([created_by], map: "idx_chapters_created_by")
+  @@index([chapter_number], map: "idx_chapters_chapter_number")
+  @@index([status], map: "idx_chapters_status")
+}
+
+model novel_subscriptions {
+  id          Int      @id @default(autoincrement())
+  user_id     Int
+  novel_id    String   @db.Uuid
+  created_at  DateTime @default(now()) @db.Timestamp(6)
+
+  // Relations
+  user        users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  novel       novels   @relation(fields: [novel_id], references: [public_id], onDelete: Cascade)
+
+  @@unique([user_id, novel_id], name: "unique_user_novel_subscription")
+  @@index([user_id], map: "idx_subscriptions_user_id")
+  @@index([novel_id], map: "idx_subscriptions_novel_id")
+}
+
+model notifications {
+  id          Int      @id @default(autoincrement())
+  user_id     Int
+  message     String   @db.Text
+  is_read     Boolean  @default(false)
+  created_at  DateTime @default(now()) @db.Timestamp(6)
+
+  // Relations
+  user        users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id], map: "idx_notifications_user_id")
+  @@index([is_read], map: "idx_notifications_is_read")
+  @@index([created_at], map: "idx_notifications_created_at")
+}
+
+model reading_progress {
+  id           Int      @id @default(autoincrement())
+  user_id      Int
+  novel_id     String   @db.Uuid
+  novel_title  String   @db.VarChar(500)
+  cover_image  String?  @db.VarChar(500)
+  author       String   @db.VarChar(255)
+  last_chapter Int
+  is_completed Boolean  @default(false)
+  started_at   DateTime @default(now()) @db.Timestamp(6)
+  completed_at DateTime? @db.Timestamp(6)
+  updated_at   DateTime @updatedAt @db.Timestamp(6)
+
+  // Relations
+  user         users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  novel        novels   @relation(fields: [novel_id], references: [public_id], onDelete: Cascade)
+
+  @@unique([user_id, novel_id], name: "unique_user_novel_progress")
+  @@index([user_id], map: "idx_reading_progress_user_id")
+  @@index([novel_id], map: "idx_reading_progress_novel_id")
+}
+
+model novel_likes {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  novel_id   String   @db.Uuid
+  created_at DateTime @default(now()) @db.Timestamp(6)
+
+  // Relations
+  user       users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  novel      novels   @relation(fields: [novel_id], references: [public_id], onDelete: Cascade)
+
+  @@unique([user_id, novel_id], name: "unique_user_novel_like")
+  @@index([user_id], map: "idx_novel_likes_user_id")
+  @@index([novel_id], map: "idx_novel_likes_novel_id")
+}
+
+model novel_bookmarks {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  novel_id   String   @db.Uuid
+  created_at DateTime @default(now()) @db.Timestamp(6)
+
+  // Relations
+  user       users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  novel      novels   @relation(fields: [novel_id], references: [public_id], onDelete: Cascade)
+
+  @@unique([user_id, novel_id], name: "unique_user_novel_bookmark")
+  @@index([user_id], map: "idx_novel_bookmarks_user_id")
+  @@index([novel_id], map: "idx_novel_bookmarks_novel_id")
 }

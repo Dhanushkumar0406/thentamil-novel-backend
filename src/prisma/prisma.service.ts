@@ -7,11 +7,7 @@ import { Pool } from 'pg';
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
   constructor() {
     const pool = new Pool({
-      host: 'localhost',
-      port: 5432,
-      user: 'postgres',
-      password: '2003',
-      database: 'novel_db',
+      connectionString: process.env.DATABASE_URL,
     });
     const adapter = new PrismaPg(pool);
 
