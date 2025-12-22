@@ -9,8 +9,9 @@ node_modules/
 .env.production.local
 
 # Compiled output
-/dist
-/build
+dist/
+build/
+.nest/
 
 # Logs
 logs
@@ -26,29 +27,71 @@ lerna-debug.log*
 Thumbs.db
 
 # Tests
-/coverage
-/.nyc_output
+coverage/
+.nyc_output/
 
 # IDEs and editors
-/.idea
+.vscode/
+.idea
 .project
 .classpath
-.c9/
-*.launch
 .settings/
-*.sublime-workspace
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
 
 # Prisma
-/generated/prisma
-prisma/migrations/*_migration.sql
 node_modules/.prisma
+prisma/dev.db
+prisma/dev.db-journal
 
 # Temp files
 *.tmp
 *.temp
 .cache
+
+# Temporary documentation files
+ADMIN_CREDENTIALS.md
+API_ENDPOINTS_LIST.md
+CLEANUP_GUIDE.md
+COMPLETE_API_LIST.md
+DATABASE_VERIFICATION_REPORT.txt
+FIXES_APPLIED.md
+FRONTEND_DEVELOPER_GUIDE.md
+IMPLEMENTATION_PLAN.md
+IMPLEMENTATION_SUMMARY.md
+MISSING_FEATURES_ANALYSIS.md
+NEW_FEATURES_SUMMARY.md
+NOVEL_PLATFORM_API.md
+POSTMAN_TROUBLESHOOTING.md
+PROJECT_SUMMARY.md
+QUICK_API_REFERENCE.md
+TEST_RESULTS.md
+
+# Test and debug scripts
+check-users.js
+complete-db-verification.js
+comprehensive-api-db-test.js
+create-admin-via-api.js
+create-admin.js
+final-db-verification.js
+reset-admin-password.js
+show-database.js
+sync-supabase.js
+test-api.js
+test-login.js
+test-new-apis.js
+test-signup-scenarios.js
+test-signup.js
+verify-user.js
+
+# Script files
+cleanup-project.ps1
+test-api.bat
+test-novel-platform.ps1
+test-simple.ps1
+
+# Postman collections and data
+.postman/
+postman/
+Tamil_Novels_Platform_Postman_Collection.json
+
+# Invalid/error files
+nul
