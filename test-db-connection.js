@@ -1,7 +1,7 @@
 const { Pool } = require('pg');
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://postgres:2003@localhost:5432/novel_db?schema=public',
+  connectionString: process.env.DATABASE_URL || 'postgresql://postgres:Dhanush!0406@localhost:5432/thentamil_novels?schema=public',
 });
 
 async function testConnection() {
