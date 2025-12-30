@@ -61,9 +61,9 @@ export class ChaptersService {
     const chapter = await this.prisma.chapters.create({
       data: {
         chapter_number,
-        name,
+        name: name || '',
         title,
-        chapter_type,
+        chapter_type: chapter_type || '',
         thumbnail,
         content,
         novel_id,
