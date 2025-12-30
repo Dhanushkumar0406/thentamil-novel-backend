@@ -6,6 +6,8 @@ import {
   IsInt,
   Min,
   IsUrl,
+  IsOptional,
+  IsEnum,
 } from 'class-validator';
 
 export class CreateChapterDto {
@@ -17,7 +19,8 @@ export class CreateChapterDto {
   @IsNotEmpty()
   @MinLength(1)
   @MaxLength(255)
-  name: string;
+  @IsOptional()
+  name?: string;
 
   @IsString()
   @IsNotEmpty()
@@ -29,11 +32,12 @@ export class CreateChapterDto {
   @IsNotEmpty()
   @MinLength(1)
   @MaxLength(100)
-  chapter_type: string;
+  @IsOptional()
+  chapter_type?: string;
 
   @IsUrl()
-  @IsNotEmpty()
-  thumbnail: string;
+  @IsOptional()
+  thumbnail?: string;
 
   @IsString()
   @IsNotEmpty()
@@ -43,4 +47,8 @@ export class CreateChapterDto {
   @IsString()
   @IsNotEmpty()
   novel_id: string;
+
+  @IsEnum(['DRAFT', 'PUBLISHED'])
+  @IsOptional()
+  status?: string;
 }

@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
@@ -10,9 +11,14 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { UserModule } from './user/user.module';
 import { ReadingProgressModule } from './reading-progress/reading-progress.module';
 import { AdminModule } from './admin/admin.module';
+import { HealthController } from './health/health.controller';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
     PrismaModule,
     AuthModule,
     NovelsModule,
@@ -23,7 +29,7 @@ import { AdminModule } from './admin/admin.module';
     ReadingProgressModule,
     AdminModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, HealthController],
   providers: [AppService],
 })
 export class AppModule {}

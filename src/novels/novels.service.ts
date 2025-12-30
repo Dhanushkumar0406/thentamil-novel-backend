@@ -9,6 +9,8 @@ import { CreateNovelDto } from './dto/create-novel.dto';
 import { UpdateNovelDto } from './dto/update-novel.dto';
 import { NovelQueryDto } from './dto/novel-query.dto';
 import { Role } from '@prisma/client';
+import { NovelStatus } from '@prisma/client';
+
 
 @Injectable()
 export class NovelsService {
@@ -52,9 +54,13 @@ export class NovelsService {
       sortOrder = 'desc',
       search,
       category,
+      status,
     } = query;
 
-    const skip = (page - 1) * limit;
+    // Convert to numbers (query params come as strings)
+    const pageNum = Number(page);
+    const limitNum = Number(limit);
+    const skip = (pageNum - 1) * limitNum;
 
     // Build where clause for filtering
     const where: any = {};
@@ -69,8 +75,12 @@ export class NovelsService {
 
     if (category) {
       where.categories = {
-        array_contains: [category],
+        has: category,
       };
+    }
+
+    if (status) {
+      where.status = status;
     }
 
     // Get total count for pagination
@@ -80,7 +90,7 @@ export class NovelsService {
     const novels = await this.prisma.novels.findMany({
       where,
       skip,
-      take: limit,
+      take: limitNum,
       orderBy: {
         [sortBy]: sortOrder,
       },
@@ -103,12 +113,12 @@ export class NovelsService {
     });
 
     return {
-      data: novels,
-      meta: {
+      items: novels,
+      pagination: {
         total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
+        page: pageNum,
+        limit: limitNum,
+        totalPages: Math.ceil(total / limitNum),
       },
     };
   }
@@ -300,7 +310,7 @@ export class NovelsService {
       where: {
         unique_user_novel_like: {
           user_id: userId,
-          novel_id: publicId,
+          novel_id: novel.public_id,
         },
       },
     });
@@ -314,7 +324,7 @@ export class NovelsService {
       this.prisma.novel_likes.create({
         data: {
           user_id: userId,
-          novel_id: publicId,
+          novel_id: novel.public_id,
         },
       }),
       this.prisma.novels.update({
@@ -331,12 +341,21 @@ export class NovelsService {
   }
 
   async unlikeNovel(publicId: string, userId: number) {
+    // Get novel first to get internal ID
+    const novel = await this.prisma.novels.findUnique({
+      where: { public_id: publicId },
+    });
+
+    if (!novel) {
+      throw new NotFoundException(`Novel with ID ${publicId} not found`);
+    }
+
     // Check if like exists
     const existingLike = await this.prisma.novel_likes.findUnique({
       where: {
         unique_user_novel_like: {
           user_id: userId,
-          novel_id: publicId,
+          novel_id: novel.public_id,
         },
       },
     });
@@ -351,7 +370,7 @@ export class NovelsService {
         where: {
           unique_user_novel_like: {
             user_id: userId,
-            novel_id: publicId,
+            novel_id: novel.public_id,
           },
         },
       }),
@@ -383,7 +402,7 @@ export class NovelsService {
       where: {
         unique_user_novel_bookmark: {
           user_id: userId,
-          novel_id: publicId,
+          novel_id: novel.public_id,
         },
       },
     });
@@ -397,7 +416,7 @@ export class NovelsService {
       this.prisma.novel_bookmarks.create({
         data: {
           user_id: userId,
-          novel_id: publicId,
+          novel_id: novel.public_id,
         },
       }),
       this.prisma.novels.update({
@@ -414,12 +433,21 @@ export class NovelsService {
   }
 
   async unbookmarkNovel(publicId: string, userId: number) {
+    // Get novel first to get internal ID
+    const novel = await this.prisma.novels.findUnique({
+      where: { public_id: publicId },
+    });
+
+    if (!novel) {
+      throw new NotFoundException(`Novel with ID ${publicId} not found`);
+    }
+
     // Check if bookmark exists
     const existingBookmark = await this.prisma.novel_bookmarks.findUnique({
       where: {
         unique_user_novel_bookmark: {
           user_id: userId,
-          novel_id: publicId,
+          novel_id: novel.public_id,
         },
       },
     });
@@ -434,7 +462,7 @@ export class NovelsService {
         where: {
           unique_user_novel_bookmark: {
             user_id: userId,
-            novel_id: publicId,
+            novel_id: novel.public_id,
           },
         },
       }),

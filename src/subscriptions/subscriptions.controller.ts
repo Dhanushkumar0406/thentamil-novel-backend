@@ -38,8 +38,8 @@ export class SubscriptionsController {
   ) {
     return this.subscriptionsService.getUserSubscriptions(
       req.user.id,
-      page,
-      limit,
+      page ? Number(page) : undefined,
+      limit ? Number(limit) : undefined,
     );
   }
 

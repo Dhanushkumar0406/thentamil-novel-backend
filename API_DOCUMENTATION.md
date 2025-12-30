@@ -330,21 +330,21 @@ The system supports three user roles:
 
 #### Signup
 ```bash
-curl -X POST http://localhost:3000/auth/signup \
+curl -X POST http://localhost:4000/auth/signup \
   -H "Content-Type: application/json" \
   -d "{\"full_name\":\"John Doe\",\"email\":\"john@example.com\",\"password\":\"password123\"}"
 ```
 
 #### Login
 ```bash
-curl -X POST http://localhost:3000/auth/login \
+curl -X POST http://localhost:4000/auth/login \
   -H "Content-Type: application/json" \
   -d "{\"email\":\"john@example.com\",\"password\":\"password123\"}"
 ```
 
 #### Access Protected Route
 ```bash
-curl http://localhost:3000/profile \
+curl http://localhost:4000/profile \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
@@ -403,7 +403,7 @@ console.log(data);
 
 #### Login
 ```javascript
-const response = await fetch('http://localhost:3000/auth/login', {
+const response = await fetch('http://localhost:4000/auth/login', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
