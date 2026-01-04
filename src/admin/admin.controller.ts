@@ -11,6 +11,11 @@ import { Role } from '@prisma/client';
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
+  @Get('stats')
+  async getStats() {
+    return this.adminService.getStats();
+  }
+
   @Get('dashboard/stats')
   getDashboardStats() {
     return this.adminService.getDashboardStats();

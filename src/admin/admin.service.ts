@@ -5,6 +5,29 @@ import { PrismaService } from '../prisma/prisma.service';
 export class AdminService {
   constructor(private prisma: PrismaService) {}
 
+  async getStats() {
+    // Simple stats for dashboard overview
+    const [totalNovels, totalChapters, totalUsers] = await Promise.all([
+      this.prisma.novels.count(),
+      this.prisma.chapters.count(),
+      this.prisma.users.count(),
+    ]);
+
+    // Calculate total views from all novels
+    const novelsWithViews = await this.prisma.novels.aggregate({
+      _sum: {
+        views: true,
+      },
+    });
+
+    return {
+      totalNovels,
+      totalChapters,
+      totalUsers,
+      totalViews: novelsWithViews._sum.views || 0,
+    };
+  }
+
   async getDashboardStats() {
     // Get total counts
     const [

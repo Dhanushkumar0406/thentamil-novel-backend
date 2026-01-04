@@ -28,12 +28,25 @@ async function bootstrap() {
     'http://127.0.0.1:5173',
     'http://localhost:5174',
     'http://127.0.0.1:5174',
+    'http://[::1]:5173',  // IPv6 localhost
+    'http://[::1]:5174',  // IPv6 localhost
   ];
 
   app.enableCors({
     origin: (origin, callback) => {
       // Allow requests with no origin (mobile apps, curl, etc)
       if (!origin) return callback(null, true);
+
+      // In development, allow all localhost variants
+      if (process.env.NODE_ENV === 'development' && origin) {
+        const isLocalhost = origin.includes('localhost') ||
+                          origin.includes('127.0.0.1') ||
+                          origin.includes('[::1]');
+        if (isLocalhost) {
+          console.log(`✅ CORS allowed for development origin: ${origin}`);
+          return callback(null, true);
+        }
+      }
 
       if (allowedOrigins.includes(origin)) {
         callback(null, true);
